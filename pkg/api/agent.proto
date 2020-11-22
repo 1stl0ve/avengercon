@@ -1,0 +1,60 @@
+//agent.proto
+syntax = "proto3";
+package api;
+
+service Agent {
+    rpc GetTask (AgentID) returns (Task);  
+    rpc SendResponse (Response) returns (Empty);
+    rpc RegisterAgent (Registration) returns (Empty);
+    rpc UnregisterAgent (AgentID) returns (Empty);
+}
+
+// Admin defines our Admin API functions
+service Admin {
+    rpc TaskAgent (Task) returns (Response);
+    rpc GetAgents (Empty) returns (RegisteredAgents);
+}
+
+// Registration defines a message for registering a new Agent with a server.
+// The Registration will contain the Agent's unique identifier as well as some
+// system information.
+message Registration {
+    string AgentID = 1;
+    string OS = 2;
+    string Version = 3;
+    repeated string IP = 4;
+    string Hostname = 5;
+}
+
+// AgentID defines a message that contains an Agent's unique identifier.
+message AgentID {
+    string AgentID = 1;
+}
+
+enum Status {
+    OK = 0;
+    ERROR = 1;
+    UNIMPLEMENTED = 2;
+}
+
+// Task defines a message for sending a task to a remote Agent
+message Task {
+    Status Status = 1;
+    string AgentID = 2;
+    string Name = 3;
+    bytes Data = 4;
+}
+
+// Response defines a message for sending a response back to an Admin
+message Response {
+    Status Status = 1;
+    string AgentID = 2;
+    bytes Data = 3;
+}
+
+message RegisteredAgents {
+    repeated Registration Agents = 1;
+}
+
+// Empty defines an empty message used in place of NULL
+message Empty {}
